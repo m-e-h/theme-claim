@@ -1,0 +1,21 @@
+{
+	"name": "theme-claim",
+	"version": "1.0.0",
+	"description": "WP theme renamer",
+	"repository": "https://github.com/m-e-h/theme-claim",
+	"author": "Marty Helmick",
+	"license": "GPL-2.0+",
+	"main": "index.js",
+	"scripts": {
+		"start": "node index.js"
+	},
+	"devDependencies": {
+		"boxen": "1.3.0",
+		"chalk": "^2.4.1",
+		"clear": "^0.1.0",
+		"fs-extra": "^6.0.0",
+		"inquirer": "^5.2.0",
+		"replace-in-file": "^3.4.0",
+		"trash": "^4.3.0"
+	}
+}

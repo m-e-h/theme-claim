@@ -1,0 +1,22 @@
+{
+  "entry": {
+    "main": [
+      "./scripts/main.js",
+      "./styles/main.scss"
+    ],
+    "customizer": [
+      "./scripts/customizer.js"
+    ]
+  },
+  "publicPath": "/dist",
+  "devUrl": "http://example.test",
+  "themeName": "kfdsj",
+  "themeDescription": "An awesome starter theme for WordPress.",
+  "textDomain": "dfsa",
+  "themeAuthor": "afds",
+  "themeUri": "afds",
+  "themeSupport": {
+    "getTheImage": true,
+    "breadcrumbTrail": true
+  }
+}
