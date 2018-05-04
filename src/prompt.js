@@ -1,67 +1,44 @@
-const path = require('path');
-const baseDir = path.dirname(require.main.filename);
-const fs = require('fs-extra');
-const chalk = require('chalk');
-const inquirer = require('./inquirer');
-const conf = require(`${baseDir}/src/conf.json`);
-const replace = require('replace-in-file');
-const clear = require('clear');
+const path = require("path");
+const fs = require("fs-extra");
+const conf = require("./conf.json");
+const chalk = require("chalk");
+const inquirer = require("./inquirer");
+const replace = require("replace-in-file");
+const files = require("./files");
 
 const themePrompt = async () => {
 	const themedata = await inquirer.themeQuestions();
-	conf['themeName'] = themedata.theme_name;
-	conf['textDomain'] = themedata.text_domain;
-	conf['themeAuthor'] = themedata.theme_author;
-	conf['themeUri'] = themedata.theme_uri;
-	fs.writeJson(`${baseDir}/src/conf.json`, conf, { spaces: 2 });
+	conf.themeName = themedata.theme_name;
+	conf.textDomain = themedata.text_domain;
+	conf.themeAuthor = themedata.theme_author;
+	conf.themeUri = themedata.theme_uri;
+	fs.writeJson(`${path.resolve(__dirname)}/conf.json`, conf, { spaces: 2 });
 };
 
 const themeData = async () => {
-	const options = {
-		files: 'style.css',
-		from: ['https://github.com/justintadlock/abc', 'Justin Tadlock'],
-		to: [conf.themeUri, conf.themeAuthor]
-	};
-
 	try {
-		const changes = await replace(options);
+		const changes = await replace(files.styleOptions);
 		console.log(
-			chalk.bold('Theme data updated in:\n'),
-			chalk.yellow(changes.join(',\n'))
+			chalk.bold("Theme data updated in:\n"),
+			chalk.yellow(changes.join(",\n"))
 		);
 	} catch (error) {
-		console.error('Error occurred:', error);
+		console.error("Error occurred:", error);
 	}
 };
 
 const nameReplace = async () => {
 	await themePrompt();
 	await themeData();
-	const options = {
-		files: [
-			// 'app/**/*.php',
-			// 'resources/views/**/*.php',
-			//'functions.php',
-			'style.css',
-			//'readme.md'
-		],
-		from: [/ABC/g, /abc-/g, /abc_/g, /abc/g],
-		to: [
-			conf.themeName,
-			`${conf.textDomain}-`,
-			`${conf.textDomain}_`,
-			conf.textDomain
-		]
-	};
 
 	try {
-		const changes = await replace(options);
+		const changes = await replace(files.options);
 		console.log(
-			chalk.bold('New theme name added to the following:\n'),
-			chalk.yellow(changes.join(',\n'))
+			chalk.bold("New theme name added to the following:\n"),
+			chalk.yellow(changes.join(",\n"))
 		);
 	} catch (error) {
-		console.error('Error occurred:', error);
+		console.error("Error occurred:", error);
 	}
 };
 

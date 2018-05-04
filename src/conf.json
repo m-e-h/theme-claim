@@ -10,11 +10,11 @@
   },
   "publicPath": "/dist",
   "devUrl": "http://example.test",
-  "themeName": "kfdsj",
+  "themeName": "ABC",
   "themeDescription": "An awesome starter theme for WordPress.",
-  "textDomain": "dfsa",
-  "themeAuthor": "afds",
-  "themeUri": "afds",
+  "textDomain": "abc",
+  "themeAuthor": "Your Name",
+  "themeUri": "themeurl.com",
   "themeSupport": {
     "getTheImage": true,
     "breadcrumbTrail": true
