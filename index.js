@@ -8,6 +8,7 @@ const chalk = require("chalk");
 const clear = require("clear");
 const boxen = require("boxen");
 const replace = require('replace-in-file');
+const findUp = require('find-up');
 
 const init = () => {
 	clear();
@@ -23,41 +24,49 @@ const init = () => {
 };
 
 const askQuestions = () => {
+	const prevData = require("./confOld.json");
 	const questions = [
 		{
 			type: "input",
 			name: "theme_name",
-			message: "Theme Name:"
+			message: "Theme Name:",
+			default: `"${prevData.themeName}"`
 		},
 		{
 			type: "input",
 			name: "theme_description",
-			message: "Short theme description:"
+			message: "Short theme description:",
+			default: `"${prevData.themeDescription}"`
 		},
 		{
 			type: "input",
-			name: "theme_url",
-			message: "URL to the theme:"
+			name: "theme_uri",
+			message: "URL to the theme:",
+			default: `"${prevData.themeUri}"`
 		},
 		{
 			type: "input",
 			name: "theme_version",
-			message: "Theme version number:"
+			message: "Theme version number:",
+			default: `"${prevData.themeVersion}"`
 		},
 		{
 			type: "input",
 			name: "theme_author",
-			message: "Theme Author:"
+			message: "Theme Author:",
+			default: `"${prevData.themeAuthor}"`
 		},
 		{
 			type: "input",
-			name: "theme_author_url",
-			message: "Website of theme author:"
+			name: "theme_author_uri",
+			message: "Website of theme author:",
+			default: `"${prevData.themeAuthorUri}"`
 		},
 		{
 			type: "input",
 			name: "text_domain",
-			message: "Theme text-domain:"
+			message: "Theme text-domain:",
+			default: `"${prevData.textDomain}"`
 		}
 	];
 	return inquirer.prompt(questions);
@@ -74,21 +83,35 @@ const stashData = async () => {
 
 // All theme files
 const doReplacements = async () => {
+	const foundFile = await findUp("style.css");
+	const themeRoot = path.dirname(foundFile);
+
 	const prevData = require("./confOld.json");
+	const prevName = new RegExp(prevData.themeName, 'g');
+	const prevDesc = new RegExp(prevData.themeDescription, 'g');
+	const prevUri = new RegExp(prevData.themeUri, 'g');
+	const prevVersion = new RegExp(prevData.themeVersion, 'g');
+	const prevAuthor = new RegExp(prevData.themeAuthor, 'g');
+	const prevAuthorUri = new RegExp(prevData.themeAuthorUri, 'g');
+	const prevtextDomain = new RegExp(prevData.textDomain, 'g');
+
 	return {
 		files: [
-			'./**/*.php',
-			'./style.css',
-			'./readme.md',
+			`${themeRoot}/**/*.php`,
+			`${themeRoot}/style.css`,
+			`${themeRoot}/readme.md`
+		],
+		ignore: [
+
 		],
 		from: [
-			`/${prevData.themeName}/g`,
-			`/${prevData.themeDescription}/g`,
-			`/${prevData.themeUri}/g`,
-			`/${prevData.themeVersion}/g`,
-			`/${prevData.themeAuthor}/g`,
-			`/${prevData.themeAuthorUrl}/g`,
-			`/${prevData.textDomain}/g`
+			prevName,
+			prevDesc,
+			prevUri,
+			prevVersion,
+			prevAuthor,
+			prevAuthorUri,
+			prevtextDomain
 		],
 		to: [
 			conf.themeName,
@@ -96,7 +119,7 @@ const doReplacements = async () => {
 			conf.themeUri,
 			conf.themeVersion,
 			conf.themeAuthor,
-			conf.themeAuthorUrl,
+			conf.themeAuthorUri,
 			conf.textDomain
 		]
 	}
@@ -118,23 +141,23 @@ const renameTheme = async () => {
 const storeData = async (
 	theme_name,
 	theme_description,
-	theme_url,
+	theme_uri,
 	theme_version,
 	theme_author,
-	theme_author_url,
+	theme_author_uri,
 	text_domain
 ) => {
 	conf.themeName = theme_name;
 	conf.themeDescription = theme_description;
-	conf.themeUrl = theme_url;
+	conf.themeUri = theme_uri;
 	conf.themeVersion = theme_version;
 	conf.themeAuthor = theme_author;
-	conf.themeAuthorUrl = theme_author_url;
+	conf.themeAuthorUri = theme_author_uri;
 	conf.textDomain = text_domain;
 	fs.writeJson(`${path.resolve(__dirname)}/conf.json`, conf, { spaces: 2 });
 };
 
-(async () => {
+const run = async () => {
 	// show script introduction
 	init();
 
@@ -146,10 +169,10 @@ const storeData = async (
 	const {
 		theme_name,
 		theme_description,
-		theme_url,
+		theme_uri,
 		theme_version,
 		theme_author,
-		theme_author_url,
+		theme_author_uri,
 		text_domain
 	} = answers;
 
@@ -157,13 +180,15 @@ const storeData = async (
 	await storeData(
 		theme_name,
 		theme_description,
-		theme_url,
+		theme_uri,
 		theme_version,
 		theme_author,
-		theme_author_url,
+		theme_author_uri,
 		text_domain
 	);
 
 	console.log('Out with the old. In with the new...\n');
 	await renameTheme();
-})();
+};
+
+run();

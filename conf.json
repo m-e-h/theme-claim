@@ -1,9 +1,9 @@
 {
-	"themeName": "ABC",
-	"themeDescription": "An awesome starter theme for WordPress.",
-	"themeUri": "https://github.com/justintadlock/abc",
-	"themeVersion": "1.0.0-dev",
-	"themeAuthor": "Justin Tadlock",
-	"themeAuthorUrl": "http://themehybrid.com",
-	"textDomain": "abc"
+  "themeName": "Mystic",
+  "themeDescription": "Mystic is the new name",
+  "themeUri": "google.com",
+  "themeVersion": "1.1-dev",
+  "themeAuthor": "Marty Helmick",
+  "themeAuthorUri": "github.com",
+  "textDomain": "mystic"
 }
