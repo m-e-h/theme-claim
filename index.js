@@ -9,7 +9,9 @@ const clear = require("clear");
 const boxen = require("boxen");
 const replace = require('replace-in-file');
 const findUp = require('find-up');
+const slugify = require('@sindresorhus/slugify');
 
+// Intro text
 const init = () => {
 	clear();
 	console.log(
@@ -23,6 +25,7 @@ const init = () => {
 	);
 };
 
+// Questions
 const askQuestions = () => {
 	const prevData = require("./confOld.json");
 	const questions = [
@@ -30,49 +33,49 @@ const askQuestions = () => {
 			type: "input",
 			name: "theme_name",
 			message: "Theme Name:",
-			default: `"${prevData.themeName}"`
+			default: prevData.themeName
 		},
 		{
 			type: "input",
 			name: "theme_description",
 			message: "Short theme description:",
-			default: `"${prevData.themeDescription}"`
+			default: prevData.themeDescription
 		},
 		{
 			type: "input",
 			name: "theme_uri",
 			message: "URL to the theme:",
-			default: `"${prevData.themeUri}"`
+			default: prevData.themeUri
 		},
 		{
 			type: "input",
 			name: "theme_version",
 			message: "Theme version number:",
-			default: `"${prevData.themeVersion}"`
+			default: prevData.themeVersion
 		},
 		{
 			type: "input",
 			name: "theme_author",
 			message: "Theme Author:",
-			default: `"${prevData.themeAuthor}"`
+			default: prevData.themeAuthor
 		},
 		{
 			type: "input",
 			name: "theme_author_uri",
 			message: "Website of theme author:",
-			default: `"${prevData.themeAuthorUri}"`
+			default: prevData.themeAuthorUri
 		},
 		{
 			type: "input",
 			name: "text_domain",
 			message: "Theme text-domain:",
-			default: `"${prevData.textDomain}"`
+			default: prevData.textDomain
 		}
 	];
 	return inquirer.prompt(questions);
 };
 
-const stashData = async () => {
+const createConfOld = async () => {
 	try {
 		await fs.copy("./conf.json", "./confOld.json");
 		return fs.readJson("./confOld.json");
@@ -86,7 +89,10 @@ const doReplacements = async () => {
 	const foundFile = await findUp("style.css");
 	const themeRoot = path.dirname(foundFile);
 
-	const prevData = require("./confOld.json");
+	const prevData = await fs.readJson("./confOld.json");
+
+	const prevSlugged = new RegExp(slugify(prevData.themeName, {separator: '_'}) + '_', 'g');
+	const prevDashed = new RegExp(slugify(prevData.themeName) + '-', 'g');
 	const prevName = new RegExp(prevData.themeName, 'g');
 	const prevDesc = new RegExp(prevData.themeDescription, 'g');
 	const prevUri = new RegExp(prevData.themeUri, 'g');
@@ -105,22 +111,26 @@ const doReplacements = async () => {
 
 		],
 		from: [
-			prevName,
 			prevDesc,
-			prevUri,
-			prevVersion,
-			prevAuthor,
 			prevAuthorUri,
-			prevtextDomain
+			prevUri,
+			prevSlugged,
+			prevDashed,
+			prevName,
+			prevAuthor,
+			prevtextDomain,
+			prevVersion
 		],
 		to: [
-			conf.themeName,
 			conf.themeDescription,
-			conf.themeUri,
-			conf.themeVersion,
-			conf.themeAuthor,
 			conf.themeAuthorUri,
-			conf.textDomain
+			conf.themeUri,
+			slugify(conf.themeName, {separator: '_'}) + '_',
+			slugify(conf.themeName) + '-',
+			conf.themeName,
+			conf.themeAuthor,
+			conf.textDomain,
+			conf.themeVersion
 		]
 	}
 };
@@ -154,15 +164,15 @@ const storeData = async (
 	conf.themeAuthor = theme_author;
 	conf.themeAuthorUri = theme_author_uri;
 	conf.textDomain = text_domain;
-	fs.writeJson(`${path.resolve(__dirname)}/conf.json`, conf, { spaces: 2 });
+	await fs.writeJson(`${path.resolve(__dirname)}/conf.json`, conf, { spaces: 2 });
 };
 
 const run = async () => {
 	// show script introduction
 	init();
 
-	console.log('Stashing old data...\n');
-	await stashData();
+	console.log('Stashing old config...\n');
+	await createConfOld();
 
 	// ask questions
 	const answers = await askQuestions();
@@ -176,7 +186,7 @@ const run = async () => {
 		text_domain
 	} = answers;
 
-	console.log('Storing new data...\n');
+	console.log('Creating new config...\n');
 	await storeData(
 		theme_name,
 		theme_description,
