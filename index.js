@@ -2,7 +2,7 @@
 
 const path = require("path");
 const fs = require("fs-extra");
-const conf = require("./conf.json");
+const conf = require(`${path.resolve(__dirname)}/conf.json`);
 const inquirer = require("inquirer");
 const chalk = require("chalk");
 const clear = require("clear");
@@ -27,7 +27,7 @@ const init = () => {
 
 // Questions
 const askQuestions = () => {
-	const prevData = require("./confOld.json");
+	const prevData = require(`${path.resolve(__dirname)}/confOld.json`);
 	const questions = [
 		{
 			type: "input",
@@ -77,8 +77,7 @@ const askQuestions = () => {
 
 const createConfOld = async () => {
 	try {
-		await fs.copy("./conf.json", "./confOld.json");
-		return fs.readJson("./confOld.json");
+		await fs.copy(`${path.resolve(__dirname)}/conf.json`, `${path.resolve(__dirname)}/confOld.json`);
 	} catch (err) {
 		console.error(err);
 	}
@@ -89,7 +88,7 @@ const doReplacements = async () => {
 	const foundFile = await findUp("style.css");
 	const themeRoot = path.dirname(foundFile);
 
-	const prevData = await fs.readJson("./confOld.json");
+	const prevData = await fs.readJson(`${path.resolve(__dirname)}/confOld.json`);
 
 	const prevSlugged = new RegExp(slugify(prevData.themeName, {separator: '_'}) + '_', 'g');
 	const prevDashed = new RegExp(slugify(prevData.themeName) + '-', 'g');
