@@ -10,6 +10,7 @@ const boxen = require("boxen");
 const replace = require('replace-in-file');
 const findUp = require('find-up');
 const slugify = require('@sindresorhus/slugify');
+const camelCase = require('camelcase');
 
 // Intro text
 const init = () => {
@@ -47,12 +48,12 @@ const askQuestions = () => {
 			message: "URL to the theme:",
 			default: prevData.themeUri
 		},
-		{
-			type: "input",
-			name: "theme_version",
-			message: "Theme version number:",
-			default: prevData.themeVersion
-		},
+		// {
+		// 	type: "input",
+		// 	name: "theme_version",
+		// 	message: "Theme version number:",
+		// 	default: prevData.themeVersion
+		// },
 		{
 			type: "input",
 			name: "theme_author",
@@ -70,6 +71,12 @@ const askQuestions = () => {
 			name: "text_domain",
 			message: "Theme text-domain:",
 			default: prevData.textDomain
+		},
+		{
+			type: "input",
+			name: "name_space",
+			message: "Theme namespace:",
+			default: prevData.nameSpace
 		}
 	];
 	return inquirer.prompt(questions);
@@ -90,15 +97,21 @@ const doReplacements = async () => {
 
 	const prevData = await fs.readJson(`${path.resolve(__dirname)}/confOld.json`);
 
-	const prevSlugged = new RegExp(slugify(prevData.themeName, {separator: '_'}) + '_', 'g');
-	const prevDashed = new RegExp(slugify(prevData.themeName) + '-', 'g');
-	const prevName = new RegExp(prevData.themeName, 'g');
-	const prevDesc = new RegExp(prevData.themeDescription, 'g');
-	const prevUri = new RegExp(prevData.themeUri, 'g');
-	const prevVersion = new RegExp(prevData.themeVersion, 'g');
-	const prevAuthor = new RegExp(prevData.themeAuthor, 'g');
-	const prevAuthorUri = new RegExp(prevData.themeAuthorUri, 'g');
-	const prevtextDomain = new RegExp(prevData.textDomain, 'g');
+	const prevName = prevData.themeName;
+	const prevDesc = prevData.themeDescription;
+	const prevUri = prevData.themeUri;
+	// const prevVersion = ` prevData.themeVersion`;
+	const prevAuthor = prevData.themeAuthor;
+	const prevAuthorUri = prevData.themeAuthorUri;
+	const prevTextDomain = prevData.textDomain;
+	const prevContainerID = slugify(prevName, {separator: '_'}) + '/';
+	const prevNameSpaceDec = `namespace ${prevData.nameSpace}`;
+	const prevNameSpace = `${prevData.nameSpace}\\\\`;
+	const prevSlugged = slugify(prevName, {separator: '_'}) + '_';
+	const prevSluggedVar = '\\$' + slugify(prevName, {separator: '_'});
+	const prevDashed = slugify(prevName) + '-';
+	const prevCamel = camelCase(prevName);
+	const prevPascal = camelCase(prevName, {pascalCase: true}) + '\\\\';
 
 	return {
 		files: [
@@ -107,29 +120,45 @@ const doReplacements = async () => {
 			`${themeRoot}/readme.md`
 		],
 		ignore: [
-
+			'vendor/**/*',
+			'node_modules/**/*',
+			'.git/**/*'
 		],
 		from: [
-			prevDesc,
-			prevAuthorUri,
-			prevUri,
-			prevSlugged,
-			prevDashed,
-			prevName,
-			prevAuthor,
-			prevtextDomain,
-			prevVersion
+			new RegExp(prevNameSpaceDec, 'g'),
+			new RegExp(prevNameSpace, 'g'),
+			new RegExp(prevSluggedVar, 'g'),
+			new RegExp(`'${prevTextDomain}'`, 'g'),
+			new RegExp(prevDesc, 'g'),
+			new RegExp(prevAuthorUri, 'g'),
+			new RegExp(prevUri, 'g'),
+			new RegExp(prevContainerID, 'g'),
+			new RegExp(prevSlugged, 'g'),
+			new RegExp(prevDashed, 'g'),
+			new RegExp(prevName, 'g'),
+			new RegExp(prevPascal, 'g'),
+			new RegExp(prevCamel, 'g'),
+			new RegExp(prevAuthor, 'g'),
+			new RegExp(prevTextDomain, 'g')
+			// new RegExp(prevVersion, 'g')
 		],
 		to: [
+			`namespace ${conf.nameSpace}`,
+			`${conf.nameSpace}\\`,
+			'\$' + slugify(conf.themeName, {separator: '_'}),
+			`'${conf.textDomain}'`,
 			conf.themeDescription,
 			conf.themeAuthorUri,
 			conf.themeUri,
+			slugify(conf.themeName, {separator: '_'}) + '/',
 			slugify(conf.themeName, {separator: '_'}) + '_',
 			slugify(conf.themeName) + '-',
 			conf.themeName,
+			camelCase(conf.themeName, {pascalCase: true}) + '\\',
+			camelCase(conf.themeName),
 			conf.themeAuthor,
-			conf.textDomain,
-			conf.themeVersion
+			conf.textDomain
+			// conf.themeVersion
 		]
 	}
 };
@@ -151,18 +180,20 @@ const storeData = async (
 	theme_name,
 	theme_description,
 	theme_uri,
-	theme_version,
+	// theme_version,
 	theme_author,
 	theme_author_uri,
-	text_domain
+	text_domain,
+	name_space
 ) => {
 	conf.themeName = theme_name;
 	conf.themeDescription = theme_description;
 	conf.themeUri = theme_uri;
-	conf.themeVersion = theme_version;
+	// conf.themeVersion = theme_version;
 	conf.themeAuthor = theme_author;
 	conf.themeAuthorUri = theme_author_uri;
 	conf.textDomain = text_domain;
+	conf.nameSpace = name_space;
 	await fs.writeJson(`${path.resolve(__dirname)}/conf.json`, conf, { spaces: 2 });
 };
 
@@ -179,10 +210,11 @@ const run = async () => {
 		theme_name,
 		theme_description,
 		theme_uri,
-		theme_version,
+		// theme_version,
 		theme_author,
 		theme_author_uri,
-		text_domain
+		text_domain,
+		name_space
 	} = answers;
 
 	console.log('Creating new config...\n');
@@ -190,10 +222,11 @@ const run = async () => {
 		theme_name,
 		theme_description,
 		theme_uri,
-		theme_version,
+		// theme_version,
 		theme_author,
 		theme_author_uri,
-		text_domain
+		text_domain,
+		name_space
 	);
 
 	console.log('Out with the old. In with the new...\n');
