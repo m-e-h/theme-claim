@@ -8,14 +8,12 @@ Add to your `devDependencies` in `package.json`
 ```json
 "devDependencies": {
 	"theme-claim": "github:m-e-h/theme-claim",
-
 }
 ```
 Add a `script` to your `package.json`
 ```json
 "scripts": {
 	"rename": "node node_modules/theme-claim",
-
 }
 ```
 Install your deps
@@ -30,5 +28,6 @@ Run the `"script"`
 $ yarn rename
 ```
 
-For now the config is set up for use with 
+For now the config is set up for use with an _in the works_ [starter theme](https://github.com/justintadlock/abc).
+
 To rename any other theme, take a look at `node_modules/theme-claim/conf.json` and make it match your current theme data exactly _(this is the data you're wanting to change)_.
