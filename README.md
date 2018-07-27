@@ -8,14 +8,14 @@ Add to your `devDependencies` in `package.json`
 ```json
 "devDependencies": {
 	"theme-claim": "github:m-e-h/theme-claim",
-	...
+
 }
 ```
 Add a `script` to your `package.json`
 ```json
 "scripts": {
 	"rename": "node node_modules/theme-claim",
-	...
+
 }
 ```
 Install your deps
