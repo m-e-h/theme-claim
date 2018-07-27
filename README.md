@@ -1,15 +1,34 @@
 # Theme Claim
 
-### WIP
-Rename a WP theme with a couple simple command line steps.
+> Rename a WP theme with a quick cli walk-through.
 
-For testing:
-* Clone or drop the theme-claim folder into the root of your theme. 
-* Look at `/conf.json` and make sure it matches your current theme data exactly _(this is the data you're wanting to change)_.
+## Install
 
-Then you can run it by either:
-* In the terminal, from the theme-claim directory, run `yarn start` or `npm start`.
+Add to your `devDependencies` in `package.json`
+```
+"devDependencies": {
+	"theme-claim": "github:m-e-h/theme-claim",
+	...
+}
+```
+Add a `script` to your `package.json`
+```
+"scripts": {
+	"rename": "node node_modules/theme-claim",
+	...
+}
+```
+Install your deps
+```
+$ yarn
+```
 
-or 
+## Usage
 
-* add `"rename": "node theme-claim",` to your theme's package.json `"scripts":` and run `yarn rename`.
+Run the `"script"`
+```
+$ yarn rename
+```
+
+For now the config is set up for use with 
+To rename any other theme, take a look at `node_modules/theme-claim/conf.json` and make it match your current theme data exactly _(this is the data you're wanting to change)_.
