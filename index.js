@@ -28,55 +28,43 @@ const init = () => {
 
 // Questions
 const askQuestions = () => {
-	const prevData = require(`${path.resolve(__dirname)}/confOld.json`);
+	const fromData = require(`${path.resolve(__dirname)}/confOld.json`);
 	const questions = [
 		{
 			type: "input",
 			name: "theme_name",
 			message: "Theme Name:",
-			default: prevData.themeName
+			default: fromData.themeName
 		},
 		{
 			type: "input",
 			name: "theme_description",
 			message: "Short theme description:",
-			default: prevData.themeDescription
+			default: fromData.themeDescription
 		},
 		{
 			type: "input",
 			name: "theme_uri",
 			message: "URL to the theme:",
-			default: prevData.themeUri
+			default: fromData.themeUri
 		},
-		// {
-		// 	type: "input",
-		// 	name: "theme_version",
-		// 	message: "Theme version number:",
-		// 	default: prevData.themeVersion
-		// },
 		{
 			type: "input",
 			name: "theme_author",
 			message: "Theme Author:",
-			default: prevData.themeAuthor
+			default: fromData.themeAuthor
 		},
 		{
 			type: "input",
 			name: "theme_author_uri",
 			message: "Website of theme author:",
-			default: prevData.themeAuthorUri
-		},
-		{
-			type: "input",
-			name: "text_domain",
-			message: "Theme text-domain:",
-			default: prevData.textDomain
+			default: fromData.themeAuthorUri
 		},
 		{
 			type: "input",
 			name: "name_space",
 			message: "Theme namespace:",
-			default: prevData.nameSpace
+			default: fromData.nameSpace
 		}
 	];
 	return inquirer.prompt(questions);
@@ -95,24 +83,26 @@ const doReplacements = async () => {
 	const foundFile = await findUp("style.css");
 	const themeRoot = path.dirname(foundFile);
 
-	const prevData = await fs.readJson(`${path.resolve(__dirname)}/confOld.json`);
+	const fromData = await fs.readJson(`${path.resolve(__dirname)}/confOld.json`);
 
-	const prevName = prevData.themeName;
-	const prevDesc = prevData.themeDescription;
-	const prevUri = prevData.themeUri;
-	// const prevVersion = ` prevData.themeVersion`;
-	const prevAuthor = prevData.themeAuthor;
-	const prevAuthorUri = prevData.themeAuthorUri;
-	const prevTextDomain = prevData.textDomain;
-	const prevContainerID = slugify(prevName, {separator: '_'}) + '/';
-	const prevNameSpaceDec = `namespace ${prevData.nameSpace}`;
-	const prevNameSpace = `${prevData.nameSpace}\\\\`;
-	const prevSlugged = slugify(prevName, {separator: '_'}) + '_';
-	const prevSluggedVar = '\\$' + slugify(prevName, {separator: '_'});
-	const prevDashed = slugify(prevName) + '-';
-	const prevCamel = camelCase(prevName);
-	const prevPascal = camelCase(prevName, {pascalCase: true}) + '\\\\';
+	const fromName = fromData.themeName;
+	const fromDesc = fromData.themeDescription;
+	const fromUri = fromData.themeUri;
+	const fromAuthor = fromData.themeAuthor;
+	const fromAuthorUri = fromData.themeAuthorUri;
+	const fromNameSpaceDec = `namespace ${fromData.nameSpace}`;
+	const fromNameSpace = `${fromData.nameSpace}\\\\`;
+	const fromCamel = camelCase(fromName);
+	const fromPascal = camelCase(fromName, {pascalCase: true}) + '\\\\';
 
+	const fromUnderscore = slugify(fromName, {separator: '_'});
+	const fromDashed = slugify(fromName);
+	const fromPrefix = `${fromDashed}-`;
+	const fromSlugged = `${fromUnderscore}_`;
+	const fromSluggedVar = '\\$' + slugify(fromName, {separator: '_'});
+	const fromContainerID = `${fromUnderscore}/`;
+
+	const toDashed = slugify(conf.themeName);
 	return {
 		files: [
 			`${themeRoot}/**/*.php`,
@@ -125,28 +115,28 @@ const doReplacements = async () => {
 			'.git/**/*'
 		],
 		from: [
-			new RegExp(prevNameSpaceDec, 'g'),
-			new RegExp(prevNameSpace, 'g'),
-			new RegExp(prevSluggedVar, 'g'),
-			new RegExp(`'${prevTextDomain}'`, 'g'),
-			new RegExp(prevDesc, 'g'),
-			new RegExp(prevAuthorUri, 'g'),
-			new RegExp(prevUri, 'g'),
-			new RegExp(prevContainerID, 'g'),
-			new RegExp(prevSlugged, 'g'),
-			new RegExp(prevDashed, 'g'),
-			new RegExp(prevName, 'g'),
-			new RegExp(prevPascal, 'g'),
-			new RegExp(prevCamel, 'g'),
-			new RegExp(prevAuthor, 'g'),
-			new RegExp(prevTextDomain, 'g')
-			// new RegExp(prevVersion, 'g')
+			new RegExp(fromNameSpaceDec, 'g'),
+			new RegExp(fromNameSpace, 'g'),
+			new RegExp(fromSluggedVar, 'g'),
+			new RegExp(`'${fromDashed}'`, 'g'),
+			new RegExp(fromDesc, 'g'),
+			new RegExp(fromAuthorUri, 'g'),
+			new RegExp(fromUri, 'g'),
+			new RegExp(fromContainerID, 'g'),
+			new RegExp(fromSlugged, 'g'),
+			new RegExp(fromPrefix, 'g'),
+			new RegExp(fromName, 'g'),
+			new RegExp(fromPascal, 'g'),
+			new RegExp(fromAuthor, 'g'),
+			new RegExp(` ${fromDashed}`, 'g'),
+			new RegExp(fromUnderscore, 'g'),
+			new RegExp(fromCamel, 'g'),
 		],
 		to: [
 			`namespace ${conf.nameSpace}`,
 			`${conf.nameSpace}\\`,
 			'\$' + slugify(conf.themeName, {separator: '_'}),
-			`'${conf.textDomain}'`,
+			`'${toDashed}'`,
 			conf.themeDescription,
 			conf.themeAuthorUri,
 			conf.themeUri,
@@ -155,10 +145,10 @@ const doReplacements = async () => {
 			slugify(conf.themeName) + '-',
 			conf.themeName,
 			camelCase(conf.themeName, {pascalCase: true}) + '\\',
-			camelCase(conf.themeName),
 			conf.themeAuthor,
-			conf.textDomain
-			// conf.themeVersion
+			` ${toDashed}`,
+			slugify(conf.themeName, {separator: '_'}),
+			camelCase(conf.themeName)
 		]
 	}
 };
@@ -180,7 +170,6 @@ const storeData = async (
 	theme_name,
 	theme_description,
 	theme_uri,
-	// theme_version,
 	theme_author,
 	theme_author_uri,
 	text_domain,
@@ -189,7 +178,6 @@ const storeData = async (
 	conf.themeName = theme_name;
 	conf.themeDescription = theme_description;
 	conf.themeUri = theme_uri;
-	// conf.themeVersion = theme_version;
 	conf.themeAuthor = theme_author;
 	conf.themeAuthorUri = theme_author_uri;
 	conf.textDomain = text_domain;
@@ -210,7 +198,6 @@ const run = async () => {
 		theme_name,
 		theme_description,
 		theme_uri,
-		// theme_version,
 		theme_author,
 		theme_author_uri,
 		text_domain,
@@ -222,7 +209,6 @@ const run = async () => {
 		theme_name,
 		theme_description,
 		theme_uri,
-		// theme_version,
 		theme_author,
 		theme_author_uri,
 		text_domain,
