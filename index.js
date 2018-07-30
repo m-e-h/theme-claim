@@ -94,7 +94,6 @@ const doReplacements = async () => {
 	const fromNameSpace = `${fromData.nameSpace}\\\\`;
 	const fromCamel = camelCase(fromName);
 	const fromPascal = camelCase(fromName, {pascalCase: true}) + '\\\\';
-
 	const fromUnderscore = slugify(fromName, {separator: '_'});
 	const fromDashed = slugify(fromName);
 	const fromPrefix = `${fromDashed}-`;
@@ -103,6 +102,8 @@ const doReplacements = async () => {
 	const fromContainerID = `${fromUnderscore}/`;
 
 	const toDashed = slugify(conf.themeName);
+	const toUnderscore = slugify(conf.themeName, {separator: '_'});
+
 	return {
 		files: [
 			`${themeRoot}/**/*.php`,
@@ -135,19 +136,19 @@ const doReplacements = async () => {
 		to: [
 			`namespace ${conf.nameSpace}`,
 			`${conf.nameSpace}\\`,
-			'\$' + slugify(conf.themeName, {separator: '_'}),
+			`\$${toUnderscore}`,
 			`'${toDashed}'`,
 			conf.themeDescription,
 			conf.themeAuthorUri,
 			conf.themeUri,
-			slugify(conf.themeName, {separator: '_'}) + '/',
-			slugify(conf.themeName, {separator: '_'}) + '_',
-			slugify(conf.themeName) + '-',
+			`${toUnderscore}/`,
+			`${toUnderscore}_`,
+			`${toDashed}-`,
 			conf.themeName,
 			camelCase(conf.themeName, {pascalCase: true}) + '\\',
 			conf.themeAuthor,
 			` ${toDashed}`,
-			slugify(conf.themeName, {separator: '_'}),
+			toUnderscore,
 			camelCase(conf.themeName)
 		]
 	}
@@ -172,7 +173,6 @@ const storeData = async (
 	theme_uri,
 	theme_author,
 	theme_author_uri,
-	text_domain,
 	name_space
 ) => {
 	conf.themeName = theme_name;
@@ -180,7 +180,6 @@ const storeData = async (
 	conf.themeUri = theme_uri;
 	conf.themeAuthor = theme_author;
 	conf.themeAuthorUri = theme_author_uri;
-	conf.textDomain = text_domain;
 	conf.nameSpace = name_space;
 	await fs.writeJson(`${path.resolve(__dirname)}/conf.json`, conf, { spaces: 2 });
 };
@@ -189,6 +188,7 @@ const run = async () => {
 	// show script introduction
 	init();
 
+	// set current theme data aside
 	console.log('Stashing old config...\n');
 	await createConfOld();
 
@@ -200,10 +200,10 @@ const run = async () => {
 		theme_uri,
 		theme_author,
 		theme_author_uri,
-		text_domain,
 		name_space
 	} = answers;
 
+	// save answers
 	console.log('Creating new config...\n');
 	await storeData(
 		theme_name,
@@ -211,10 +211,10 @@ const run = async () => {
 		theme_uri,
 		theme_author,
 		theme_author_uri,
-		text_domain,
 		name_space
 	);
 
+	// find and replace
 	console.log('Out with the old. In with the new...\n');
 	await renameTheme();
 };
