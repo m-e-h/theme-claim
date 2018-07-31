@@ -2,15 +2,20 @@
 
 const path = require("path");
 const fs = require("fs-extra");
-const conf = require(`${path.resolve(__dirname)}/conf.json`);
 const inquirer = require("inquirer");
 const chalk = require("chalk");
 const clear = require("clear");
 const boxen = require("boxen");
-const replace = require('replace-in-file');
-const findUp = require('find-up');
-const slugify = require('@sindresorhus/slugify');
-const camelCase = require('camelcase');
+const replace = require("replace-in-file");
+const findUp = require("find-up");
+const slugify = require("@sindresorhus/slugify");
+const camelCase = require("camelcase");
+const foundFile = findUp.sync("style.css");
+const themeRoot = path.dirname(foundFile);
+const tcConf = `${path.resolve(__dirname)}/conf.json`;
+const userConf = `${themeRoot}/themeclaim.json`;
+const themeConf = userConf ? userConf : tcConf;
+let conf = require(themeConf);
 
 // Intro text
 const init = () => {
@@ -28,51 +33,80 @@ const init = () => {
 
 // Questions
 const askQuestions = () => {
-	const fromData = require(`${path.resolve(__dirname)}/confOld.json`);
 	const questions = [
 		{
 			type: "input",
 			name: "theme_name",
 			message: "Theme Name:",
-			default: fromData.themeName
+			default: conf.from.Name
 		},
 		{
 			type: "input",
 			name: "theme_description",
 			message: "Short theme description:",
-			default: fromData.themeDescription
+			default: conf.from.Description
 		},
 		{
 			type: "input",
 			name: "theme_uri",
 			message: "URL to the theme:",
-			default: fromData.themeUri
+			default: conf.from.Uri
 		},
 		{
 			type: "input",
 			name: "theme_author",
 			message: "Theme Author:",
-			default: fromData.themeAuthor
+			default: conf.from.Author
 		},
 		{
 			type: "input",
 			name: "theme_author_uri",
 			message: "Website of theme author:",
-			default: fromData.themeAuthorUri
+			default: conf.from.AuthorUri
 		},
 		{
 			type: "input",
 			name: "name_space",
-			message: "Theme namespace:",
-			default: fromData.nameSpace
+			message: "PHP namespace:",
+			default: conf.from.Namespace
 		}
 	];
 	return inquirer.prompt(questions);
 };
 
-const createConfOld = async () => {
+const saveAnswers = async () => {
+	const answers = await askQuestions();
+	const {
+		theme_name,
+		theme_description,
+		theme_uri,
+		theme_author,
+		theme_author_uri,
+		name_space
+	} = answers;
+
+	const toConf = `{
+		"from": {
+			"Name": "${conf.from.Name}",
+			"Description": "${conf.from.Description}",
+			"Uri": "${conf.from.Uri}",
+			"Author": "${conf.from.Author}",
+			"AuthorUri": "${conf.from.AuthorUri}",
+			"Namespace": "${conf.from.Namespace}"
+		},
+		"to": {
+			"Name": "${theme_name}",
+			"Description": "${theme_description}",
+			"Uri": "${theme_uri}",
+			"Author": "${theme_author}",
+			"AuthorUri": "${theme_author_uri}",
+			"Namespace": "${name_space}"
+		}
+	}`;
+
 	try {
-		await fs.copy(`${path.resolve(__dirname)}/conf.json`, `${path.resolve(__dirname)}/confOld.json`);
+		await fs.writeFile(themeConf, toConf);
+		console.log("Config updated.");
 	} catch (err) {
 		console.error(err);
 	}
@@ -80,29 +114,13 @@ const createConfOld = async () => {
 
 // All theme files
 const doReplacements = async () => {
-	const foundFile = await findUp("style.css");
-	const themeRoot = path.dirname(foundFile);
-
-	const fromData = await fs.readJson(`${path.resolve(__dirname)}/confOld.json`);
-
-	const fromName = fromData.themeName;
-	const fromDesc = fromData.themeDescription;
-	const fromUri = fromData.themeUri;
-	const fromAuthor = fromData.themeAuthor;
-	const fromAuthorUri = fromData.themeAuthorUri;
-	const fromNameSpaceDec = `namespace ${fromData.nameSpace}`;
-	const fromNameSpace = `${fromData.nameSpace}\\\\`;
-	const fromCamel = camelCase(fromName);
-	const fromPascal = camelCase(fromName, {pascalCase: true}) + '\\\\';
-	const fromUnderscore = slugify(fromName, {separator: '_'});
-	const fromDashed = slugify(fromName);
-	const fromPrefix = `${fromDashed}-`;
-	const fromSlugged = `${fromUnderscore}_`;
-	const fromSluggedVar = '\\$' + slugify(fromName, {separator: '_'});
-	const fromContainerID = `${fromUnderscore}/`;
-
-	const toDashed = slugify(conf.themeName);
-	const toUnderscore = slugify(conf.themeName, {separator: '_'});
+	let conf = await fs.readJson(themeConf);
+	const fromCamel = camelCase(conf.from.Name);
+	const fromPascal = camelCase(conf.from.Name, { pascalCase: true }) + "\\\\";
+	const fromUnderscore = slugify(conf.from.Name, { separator: "_" });
+	const fromDashed = slugify(conf.from.Name);
+	const toDashed = slugify(conf.to.Name);
+	const toUnderscore = slugify(conf.to.Name, { separator: "_" });
 
 	return {
 		files: [
@@ -111,47 +129,47 @@ const doReplacements = async () => {
 			`${themeRoot}/readme.md`
 		],
 		ignore: [
-			'vendor/**/*',
-			'node_modules/**/*',
-			'.git/**/*'
+			`${themeRoot}/vendor/**/*`,
+			`${themeRoot}/node_modules/**/*`,
+			`${themeRoot}/.git/**/*`
 		],
 		from: [
-			new RegExp(fromNameSpaceDec, 'g'),
-			new RegExp(fromNameSpace, 'g'),
-			new RegExp(fromSluggedVar, 'g'),
-			new RegExp(`'${fromDashed}'`, 'g'),
-			new RegExp(fromDesc, 'g'),
-			new RegExp(fromAuthorUri, 'g'),
-			new RegExp(fromUri, 'g'),
-			new RegExp(fromContainerID, 'g'),
-			new RegExp(fromSlugged, 'g'),
-			new RegExp(fromPrefix, 'g'),
-			new RegExp(fromName, 'g'),
-			new RegExp(fromPascal, 'g'),
-			new RegExp(fromAuthor, 'g'),
-			new RegExp(` ${fromDashed}`, 'g'),
-			new RegExp(fromUnderscore, 'g'),
-			new RegExp(fromCamel, 'g'),
+			new RegExp(`namespace ${conf.from.Namespace}`, "g"),
+			new RegExp(`${conf.from.Namespace}\\\\`, "g"),
+			new RegExp(`\\$${fromUnderscore}`, "g"),
+			new RegExp(`'${fromDashed}'`, "g"),
+			new RegExp(conf.from.Description, "g"),
+			new RegExp(conf.from.AuthorUri, "g"),
+			new RegExp(conf.from.Uri, "g"),
+			new RegExp(`${fromUnderscore}/`, "g"),
+			new RegExp(`${fromUnderscore}_`, "g"),
+			new RegExp(`${fromDashed}-`, "g"),
+			new RegExp(conf.from.Name, "g"),
+			new RegExp(fromPascal, "g"),
+			new RegExp(conf.from.Author, "g"),
+			new RegExp(` ${fromDashed}`, "g"),
+			new RegExp(fromUnderscore, "g"),
+			new RegExp(fromCamel, "g")
 		],
 		to: [
-			`namespace ${conf.nameSpace}`,
-			`${conf.nameSpace}\\`,
+			`namespace ${conf.to.Namespace}`,
+			`${conf.to.Namespace}\\`,
 			`\$${toUnderscore}`,
 			`'${toDashed}'`,
-			conf.themeDescription,
-			conf.themeAuthorUri,
-			conf.themeUri,
+			conf.to.Description,
+			conf.to.AuthorUri,
+			conf.to.Uri,
 			`${toUnderscore}/`,
 			`${toUnderscore}_`,
 			`${toDashed}-`,
-			conf.themeName,
-			camelCase(conf.themeName, {pascalCase: true}) + '\\',
-			conf.themeAuthor,
+			conf.to.Name,
+			camelCase(conf.to.Name, { pascalCase: true }) + "\\",
+			conf.to.Author,
 			` ${toDashed}`,
 			toUnderscore,
-			camelCase(conf.themeName)
+			camelCase(conf.to.Name)
 		]
-	}
+	};
 };
 
 const renameTheme = async () => {
@@ -163,59 +181,22 @@ const renameTheme = async () => {
 			chalk.yellow(changes.join(",\n"))
 		);
 	} catch (error) {
-		console.error("Error occurred:", error);
+		console.error("Error occurred in renameTheme:", error);
 	}
-};
-
-const storeData = async (
-	theme_name,
-	theme_description,
-	theme_uri,
-	theme_author,
-	theme_author_uri,
-	name_space
-) => {
-	conf.themeName = theme_name;
-	conf.themeDescription = theme_description;
-	conf.themeUri = theme_uri;
-	conf.themeAuthor = theme_author;
-	conf.themeAuthorUri = theme_author_uri;
-	conf.nameSpace = name_space;
-	await fs.writeJson(`${path.resolve(__dirname)}/conf.json`, conf, { spaces: 2 });
 };
 
 const run = async () => {
 	// show script introduction
 	init();
 
-	// set current theme data aside
-	console.log('Stashing old config...\n');
-	await createConfOld();
-
 	// ask questions
-	const answers = await askQuestions();
-	const {
-		theme_name,
-		theme_description,
-		theme_uri,
-		theme_author,
-		theme_author_uri,
-		name_space
-	} = answers;
 
 	// save answers
-	console.log('Creating new config...\n');
-	await storeData(
-		theme_name,
-		theme_description,
-		theme_uri,
-		theme_author,
-		theme_author_uri,
-		name_space
-	);
+	console.log("Updating config...\n");
+	await saveAnswers();
 
 	// find and replace
-	console.log('Out with the old. In with the new...\n');
+	console.log("Out with the old. In with the new...\n");
 	await renameTheme();
 };
 

@@ -1,9 +1,10 @@
 {
-  "themeName": "Mythic",
-  "themeDescription": "An awesome starter theme for WordPress.",
-  "themeUri": "https://github.com/justintadlock/mythic",
-  "themeVersion": "1.0.0-dev",
-  "themeAuthor": "Justin Tadlock",
-  "themeAuthorUri": "https://themehybrid.com",
-  "nameSpace": "Mythic"
+	"from": {
+		"Name": "Mythic",
+		"Description": "An awesome starter theme for WordPress.",
+		"Uri": "https://github.com/justintadlock/mythic",
+		"Author": "Justin Tadlock",
+		"AuthorUri": "https://themehybrid.com",
+		"Namespace": "Mythic"
+	}
 }

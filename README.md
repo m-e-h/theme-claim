@@ -28,6 +28,20 @@ Run the `"script"`
 $ yarn rename
 ```
 
-For now the config is set up for use with an _in the works_ [starter theme](https://github.com/justintadlock/abc).
+By default, the config is set up for use with an _in the works_ [starter theme](https://github.com/justintadlock/abc).
 
-To rename any other theme, take a look at `node_modules/theme-claim/conf.json` and make it match your current theme data exactly _(this is the data you're wanting to change)_.
+To rename any other theme, create a `themeclaim.json` and place it in the root of your theme with the following contents.
+Change the data to match your current theme data exactly _(this is the data you're wanting to change)_.
+
+```json
+{
+	"from": {
+		"Name": "Mythic",
+		"Description": "An awesome starter theme for WordPress.",
+		"Uri": "https://github.com/justintadlock/mythic",
+		"Author": "Justin Tadlock",
+		"AuthorUri": "https://themehybrid.com",
+		"Namespace": "Mythic"
+	}
+}
+```
