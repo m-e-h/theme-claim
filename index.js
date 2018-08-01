@@ -5,11 +5,10 @@ const fs = require("fs-extra");
 const inquirer = require("inquirer");
 const chalk = require("chalk");
 const clear = require("clear");
+const Case = require("case");
 const boxen = require("boxen");
 const replace = require("replace-in-file");
 const findUp = require("find-up");
-const slugify = require("@sindresorhus/slugify");
-const camelCase = require("camelcase");
 const foundFile = findUp.sync("style.css");
 const themeRoot = path.dirname(foundFile);
 const tcConf = `${path.resolve(__dirname)}/conf.json`;
@@ -86,23 +85,23 @@ const saveAnswers = async () => {
 	} = answers;
 
 	const toConf = `{
-		"from": {
-			"Name": "${conf.from.Name}",
-			"Description": "${conf.from.Description}",
-			"Uri": "${conf.from.Uri}",
-			"Author": "${conf.from.Author}",
-			"AuthorUri": "${conf.from.AuthorUri}",
-			"Namespace": "${conf.from.Namespace}"
-		},
-		"to": {
-			"Name": "${theme_name}",
-			"Description": "${theme_description}",
-			"Uri": "${theme_uri}",
-			"Author": "${theme_author}",
-			"AuthorUri": "${theme_author_uri}",
-			"Namespace": "${name_space}"
-		}
-	}`;
+	"from": {
+		"Name": "${conf.from.Name}",
+		"Description": "${conf.from.Description}",
+		"Uri": "${conf.from.Uri}",
+		"Author": "${conf.from.Author}",
+		"AuthorUri": "${conf.from.AuthorUri}",
+		"Namespace": "${conf.from.Namespace}"
+	},
+	"to": {
+		"Name": "${theme_name}",
+		"Description": "${theme_description}",
+		"Uri": "${theme_uri}",
+		"Author": "${theme_author}",
+		"AuthorUri": "${theme_author_uri}",
+		"Namespace": "${name_space}"
+	}
+}`;
 
 	try {
 		await fs.writeFile(themeConf, toConf);
@@ -115,12 +114,6 @@ const saveAnswers = async () => {
 // All theme files
 const doReplacements = async () => {
 	let conf = await fs.readJson(themeConf);
-	const fromCamel = camelCase(conf.from.Name);
-	const fromPascal = camelCase(conf.from.Name, { pascalCase: true }) + "\\\\";
-	const fromUnderscore = slugify(conf.from.Name, { separator: "_" });
-	const fromDashed = slugify(conf.from.Name);
-	const toDashed = slugify(conf.to.Name);
-	const toUnderscore = slugify(conf.to.Name, { separator: "_" });
 
 	return {
 		files: [
@@ -136,38 +129,38 @@ const doReplacements = async () => {
 		from: [
 			new RegExp(`namespace ${conf.from.Namespace}`, "g"),
 			new RegExp(`${conf.from.Namespace}\\\\`, "g"),
-			new RegExp(`\\$${fromUnderscore}`, "g"),
-			new RegExp(`'${fromDashed}'`, "g"),
+			new RegExp(`\\$${Case.snake(conf.from.Name)}`, "g"),
+			new RegExp(`${Case.snake(conf.from.Name)}/`, "g"),
+			new RegExp(`${Case.snake(conf.from.Name)}_`, "g"),
+			new RegExp(`${Case.kebab(conf.from.Name)}-`, "g"),
+			new RegExp(`'${Case.kebab(conf.from.Name)}'`, "g"),
+			new RegExp(` ${Case.kebab(conf.from.Name)}`, "g"),
+			new RegExp(`${Case.pascal(conf.from.Name)}\\\\`, "g"),
 			new RegExp(conf.from.Description, "g"),
 			new RegExp(conf.from.AuthorUri, "g"),
 			new RegExp(conf.from.Uri, "g"),
-			new RegExp(`${fromUnderscore}/`, "g"),
-			new RegExp(`${fromUnderscore}_`, "g"),
-			new RegExp(`${fromDashed}-`, "g"),
-			new RegExp(conf.from.Name, "g"),
-			new RegExp(fromPascal, "g"),
 			new RegExp(conf.from.Author, "g"),
-			new RegExp(` ${fromDashed}`, "g"),
-			new RegExp(fromUnderscore, "g"),
-			new RegExp(fromCamel, "g")
+			new RegExp(conf.from.Name, "g"),
+			new RegExp(Case.snake(conf.from.Name), "g"),
+			new RegExp(Case.camel(conf.from.Name), "g")
 		],
 		to: [
 			`namespace ${conf.to.Namespace}`,
 			`${conf.to.Namespace}\\`,
-			`\$${toUnderscore}`,
-			`'${toDashed}'`,
+			`\$${Case.snake(conf.to.Name)}`,
+			`${Case.snake(conf.to.Name)}/`,
+			`${Case.snake(conf.to.Name)}_`,
+			`${Case.kebab(conf.to.Name)}-`,
+			`'${Case.kebab(conf.to.Name)}'`,
+			` ${Case.kebab(conf.to.Name)}`,
+			`${Case.pascal(conf.to.Name)}\\`,
 			conf.to.Description,
 			conf.to.AuthorUri,
 			conf.to.Uri,
-			`${toUnderscore}/`,
-			`${toUnderscore}_`,
-			`${toDashed}-`,
-			conf.to.Name,
-			camelCase(conf.to.Name, { pascalCase: true }) + "\\",
 			conf.to.Author,
-			` ${toDashed}`,
-			toUnderscore,
-			camelCase(conf.to.Name)
+			conf.to.Name,
+			Case.snake(conf.to.Name),
+			Case.camel(conf.to.Name)
 		]
 	};
 };
@@ -177,11 +170,11 @@ const renameTheme = async () => {
 	try {
 		const changes = await replace(replacements);
 		console.log(
-			chalk.bold("Theme data updated in:\n"),
+			chalk.bold("Changes were made in the following files:\n"),
 			chalk.yellow(changes.join(",\n"))
 		);
-	} catch (error) {
-		console.error("Error occurred in renameTheme:", error);
+	} catch (err) {
+		console.error(err);
 	}
 };
 
@@ -189,9 +182,7 @@ const run = async () => {
 	// show script introduction
 	init();
 
-	// ask questions
-
-	// save answers
+	// Ask questions and save answers
 	console.log("Updating config...\n");
 	await saveAnswers();
 
