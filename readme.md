@@ -8,6 +8,8 @@
 $ yarn add theme-claim --dev
 ```
 
+## Usage
+
 Add a `script` to your `package.json`
 
 ```json
@@ -15,8 +17,6 @@ Add a `script` to your `package.json`
   "rename": "npx theme-claim",
 }
 ```
-
-## Usage
 
 Run the `"script"`
 
