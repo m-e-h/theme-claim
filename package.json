@@ -1,10 +1,13 @@
 {
 	"name": "theme-claim",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"description": "WP theme renamer",
 	"repository": "m-e-h/theme-claim",
 	"author": "Marty Helmick",
 	"license": "GPL-2.0+",
+	"bin": {
+		"theme-claim": "index.js"
+	},
 	"main": "index.js",
 	"scripts": {
 		"start": "node index.js",

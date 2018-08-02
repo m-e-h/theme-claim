@@ -4,26 +4,22 @@
 
 ## Install
 
-Add to your `devDependencies` in `package.json`
-```json
-"devDependencies": {
-	"theme-claim": "github:m-e-h/theme-claim",
-}
+```shell
+$ yarn add theme-claim --dev
 ```
+
 Add a `script` to your `package.json`
+
 ```json
 "scripts": {
-	"rename": "node node_modules/theme-claim",
+  "rename": "npx theme-claim",
 }
-```
-Install your deps
-```shell
-$ yarn
 ```
 
 ## Usage
 
 Run the `"script"`
+
 ```shell
 $ yarn rename
 ```
@@ -35,13 +31,13 @@ Change the data to match your current theme data exactly _(this is the data you'
 
 ```json
 {
-	"from": {
-		"Name": "Mythic",
-		"Description": "An awesome starter theme for WordPress.",
-		"Uri": "https://github.com/justintadlock/mythic",
-		"Author": "Justin Tadlock",
-		"AuthorUri": "https://themehybrid.com",
-		"Namespace": "Mythic"
-	}
+  "from": {
+    "Name": "Mythic",
+    "Description": "An awesome starter theme for WordPress.",
+    "Uri": "https://github.com/justintadlock/mythic",
+    "Author": "Justin Tadlock",
+    "AuthorUri": "https://themehybrid.com",
+    "Namespace": "Mythic"
+  }
 }
 ```
