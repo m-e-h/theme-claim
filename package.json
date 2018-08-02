@@ -7,7 +7,8 @@
 	"license": "GPL-2.0+",
 	"main": "index.js",
 	"scripts": {
-		"start": "node index.js"
+		"start": "node index.js",
+		"test": "npx ava"
 	},
 	"dependencies": {
 		"case": "^1.5.5",
@@ -18,5 +19,9 @@
 		"fs-extra": "^7.0.0",
 		"inquirer": "^6.0.0",
 		"replace-in-file": "^3.4.0"
+	},
+	"devDependencies": {
+		"ava": "^0.25.0",
+		"write-files-atomic": "^1.0.0"
 	}
 }
