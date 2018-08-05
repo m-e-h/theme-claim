@@ -14,7 +14,7 @@ Add a `script` to your `package.json`
 
 ```json
 "scripts": {
-  "rename": "npx theme-claim",
+  "rename": "theme-claim",
 }
 ```
 
