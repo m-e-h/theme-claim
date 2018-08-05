@@ -11,10 +11,16 @@ const replace = require("replace-in-file");
 const findUp = require("find-up");
 const foundFile = findUp.sync("style.css");
 const themeRoot = path.dirname(foundFile);
-const tcConf = `${path.resolve(__dirname)}/conf.json`;
 const userConf = `${themeRoot}/themeclaim.json`;
-const themeConf = userConf ? userConf : tcConf;
-let conf = require(themeConf);
+
+function useConf(file) {
+	if (!fs.existsSync(file)) {
+        file = `${path.resolve(__dirname)}/conf.json`;
+	}
+	return file;
+}
+
+let conf = require(useConf(userConf));
 
 // Intro text
 const init = () => {
@@ -104,7 +110,7 @@ const saveAnswers = async () => {
 }`;
 
 	try {
-		await fs.writeFile(themeConf, toConf);
+		await fs.writeFile(useConf(userConf), toConf);
 		console.log("Config updated.");
 	} catch (err) {
 		console.error(err);
@@ -113,7 +119,7 @@ const saveAnswers = async () => {
 
 // All theme files
 const doReplacements = async () => {
-	let conf = await fs.readJson(themeConf);
+	let conf = await fs.readJson(useConf(userConf));
 
 	return {
 		files: [
