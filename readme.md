@@ -31,13 +31,14 @@ Change the data to match your current theme data exactly _(this is the data you'
 
 ```json
 {
-  "from": {
-    "Name": "Mythic",
-    "Description": "An awesome starter theme for WordPress.",
-    "Uri": "https://github.com/justintadlock/mythic",
-    "Author": "Justin Tadlock",
-    "AuthorUri": "https://themehybrid.com",
-    "Namespace": "Mythic"
-  }
+	"from": {
+		"Name": "Mythic",
+		"Description": "An awesome starter theme for WordPress.",
+		"Namespace": "Mythic",
+		"Uri": "https://themehybrid.com/themes/mythic",
+		"Author": "Justin Tadlock",
+		"AuthorEmail": "justintadlock@gmail.com",
+		"AuthorUri": "https://themehybrid.com"
+	}
 }
 ```
