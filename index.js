@@ -15,7 +15,7 @@ const userConf = `${themeRoot}/themeclaim.json`;
 
 function useConf(file) {
 	if (!fs.existsSync(file)) {
-        file = `${path.resolve(__dirname)}/conf.json`;
+		file = `${path.resolve(__dirname)}/conf.json`;
 	}
 	return file;
 }
@@ -26,7 +26,7 @@ let conf = require(useConf(userConf));
 const init = () => {
 	clear();
 	console.log(
-		boxen(chalk.bold.hex("#3d627d")("Theme") + "\n\nStarter", {
+		boxen("It starts with \n\n" + chalk.bold.hex("#3d627d")(conf.from.Name), {
 			padding: 1,
 			margin: 1,
 			borderStyle: "round",
@@ -53,6 +53,12 @@ const askQuestions = () => {
 		},
 		{
 			type: "input",
+			name: "name_space",
+			message: "PHP namespace:",
+			default: conf.from.Namespace
+		},
+		{
+			type: "input",
 			name: "theme_uri",
 			message: "URL to the theme:",
 			default: conf.from.Uri
@@ -65,15 +71,15 @@ const askQuestions = () => {
 		},
 		{
 			type: "input",
-			name: "theme_author_uri",
-			message: "Website of theme author:",
-			default: conf.from.AuthorUri
+			name: "theme_author_email",
+			message: "Author's email:",
+			default: conf.from.AuthorEmail
 		},
 		{
 			type: "input",
-			name: "name_space",
-			message: "PHP namespace:",
-			default: conf.from.Namespace
+			name: "theme_author_uri",
+			message: "Website of theme author:",
+			default: conf.from.AuthorUri
 		}
 	];
 	return inquirer.prompt(questions);
@@ -84,28 +90,31 @@ const saveAnswers = async () => {
 	const {
 		theme_name,
 		theme_description,
+		name_space,
 		theme_uri,
 		theme_author,
 		theme_author_uri,
-		name_space
+		theme_author_email
 	} = answers;
 
 	const toConf = `{
 	"from": {
 		"Name": "${conf.from.Name}",
 		"Description": "${conf.from.Description}",
+		"Namespace": "${conf.from.Namespace}",
 		"Uri": "${conf.from.Uri}",
 		"Author": "${conf.from.Author}",
-		"AuthorUri": "${conf.from.AuthorUri}",
-		"Namespace": "${conf.from.Namespace}"
+		"AuthorEmail": "${conf.from.AuthorEmail}",
+		"AuthorUri": "${conf.from.AuthorUri}"
 	},
 	"to": {
 		"Name": "${theme_name}",
 		"Description": "${theme_description}",
+		"Namespace": "${name_space}",
 		"Uri": "${theme_uri}",
 		"Author": "${theme_author}",
-		"AuthorUri": "${theme_author_uri}",
-		"Namespace": "${name_space}"
+		"AuthorEmail": "${theme_author_email}",
+		"AuthorUri": "${theme_author_uri}"
 	}
 }`;
 
@@ -122,19 +131,25 @@ const doReplacements = async () => {
 	let conf = await fs.readJson(useConf(userConf));
 
 	return {
-		files: [
-			`${themeRoot}/**/*.php`,
-			`${themeRoot}/style.css`,
-			`${themeRoot}/readme.md`
-		],
 		ignore: [
+			'vendor/**/*',
+			'node_modules/**/*',
+			'.git/**/*',
 			`${themeRoot}/vendor/**/*`,
 			`${themeRoot}/node_modules/**/*`,
 			`${themeRoot}/.git/**/*`
 		],
+		files: [
+			`${themeRoot}/**/*.php`,
+			`${themeRoot}/**/*.js`,
+			`${themeRoot}/**/*.css`,
+			`${themeRoot}/readme.md`
+		],
 		from: [
+			new RegExp(conf.from.Description, "g"),
 			new RegExp(`namespace ${conf.from.Namespace}`, "g"),
 			new RegExp(`${conf.from.Namespace}\\\\`, "g"),
+			new RegExp(`(@package\\s+)${conf.from.Namespace}`, "g"),
 			new RegExp(`\\$${Case.snake(conf.from.Name)}`, "g"),
 			new RegExp(`${Case.snake(conf.from.Name)}/`, "g"),
 			new RegExp(`${Case.snake(conf.from.Name)}_`, "g"),
@@ -142,17 +157,19 @@ const doReplacements = async () => {
 			new RegExp(`'${Case.kebab(conf.from.Name)}'`, "g"),
 			new RegExp(` ${Case.kebab(conf.from.Name)}`, "g"),
 			new RegExp(`${Case.pascal(conf.from.Name)}\\\\`, "g"),
-			new RegExp(conf.from.Description, "g"),
-			new RegExp(conf.from.AuthorUri, "g"),
+			new RegExp(conf.from.AuthorEmail, "g"),
 			new RegExp(conf.from.Uri, "g"),
+			new RegExp(conf.from.AuthorUri, "g"),
 			new RegExp(conf.from.Author, "g"),
 			new RegExp(conf.from.Name, "g"),
 			new RegExp(Case.snake(conf.from.Name), "g"),
 			new RegExp(Case.camel(conf.from.Name), "g")
 		],
 		to: [
+			conf.to.Description,
 			`namespace ${conf.to.Namespace}`,
 			`${conf.to.Namespace}\\`,
+			`@package   ${conf.to.Namespace}`,
 			`\$${Case.snake(conf.to.Name)}`,
 			`${Case.snake(conf.to.Name)}/`,
 			`${Case.snake(conf.to.Name)}_`,
@@ -160,9 +177,9 @@ const doReplacements = async () => {
 			`'${Case.kebab(conf.to.Name)}'`,
 			` ${Case.kebab(conf.to.Name)}`,
 			`${Case.pascal(conf.to.Name)}\\`,
-			conf.to.Description,
-			conf.to.AuthorUri,
+			conf.to.AuthorEmail,
 			conf.to.Uri,
+			conf.to.AuthorUri,
 			conf.to.Author,
 			conf.to.Name,
 			Case.snake(conf.to.Name),
@@ -189,7 +206,7 @@ const run = async () => {
 	init();
 
 	// Ask questions and save answers
-	console.log("Updating config...\n");
+	console.log("Make it yours\n");
 	await saveAnswers();
 
 	// find and replace
