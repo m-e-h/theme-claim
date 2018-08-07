@@ -2,6 +2,11 @@
 
 > Rename a WP theme with a quick cli walk-through.
 
+[![Version][version-badge]][npm]
+
+[version-badge]: https://img.shields.io/npm/v/theme-claim.svg?style=flat-square
+[npm]: https://npmjs.com/package/theme-claim
+
 ## Install
 
 ```shell
