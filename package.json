@@ -1,29 +1,30 @@
 {
-    "name": "theme-claim",
-    "version": "0.1.2",
-    "description": "WP theme renamer",
-    "repository": "m-e-h/theme-claim",
-    "author": "Marty Helmick",
-    "license": "GPL-2.0+",
-    "bin": {
-        "theme-claim": "index.js"
-    },
-    "main": "index.js",
-    "scripts": {
-        "start": "node index.js",
-        "test": "npx ava"
-    },
-    "dependencies": {
-        "case": "^1.5.5",
-        "boxen": "^1.3.0",
-        "chalk": "^2.4.1",
-        "find-up": "^3.0.0",
-        "fs-extra": "^7.0.0",
-        "inquirer": "^6.1.0",
-        "replace-in-file": "^3.4.0"
-    },
-    "devDependencies": {
-        "ava": "^0.25.0",
-        "write-files-atomic": "^1.0.0"
-    }
+	"name": "theme-claim",
+	"version": "0.1.2",
+	"description": "WP theme renamer",
+	"repository": "m-e-h/theme-claim",
+	"author": "Marty Helmick",
+	"license": "GPL-2.0+",
+	"bin": {
+		"theme-claim": "cli.js"
+	},
+	"main": "cli.js",
+	"scripts": {
+		"start": "node cli.js",
+		"test": "npx ava"
+	},
+	"dependencies": {
+		"case": "^1.5.5",
+		"boxen": "^1.3.0",
+		"chalk": "^2.4.1",
+		"find-up": "^3.0.0",
+		"fs-extra": "^7.0.0",
+		"inquirer": "^6.1.0",
+		"meow": "^5.0.0",
+		"replace-in-file": "^3.4.0"
+	},
+	"devDependencies": {
+		"ava": "^0.25.0",
+		"write-files-atomic": "^1.0.0"
+	}
 }
