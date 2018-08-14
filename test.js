@@ -5,7 +5,7 @@ const Case = require("case");
 const replace = require("replace-in-file");
 const fixturez = require('fixturez');
 const writeFilesAtomic = require('write-files-atomic');
-let conf = require(`${path.resolve(__dirname)}/conf.json`);
+let conf = require("./lib/conf.json");
 const f = fixturez(__dirname);
 
 test('writes files', async t => {

@@ -14,8 +14,20 @@ $ yarn add theme-claim --dev
 ```
 
 ## Usage
+### In a terminal
+```shell
+$theme-claim --help
 
-Add a `script` to your `package.json`
+	Usage
+	  $ theme-claim --config=<path>
+
+	Options
+	  --config=<path>  Path to config [Default: ./themeclaim.json]
+
+	Examples
+	  $ theme-claim --config='./build/conf.json'
+```
+### Or in a `package.json` `script`
 
 ```json
 "scripts": {
