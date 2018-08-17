@@ -32,7 +32,10 @@ const cli = meow(
 
 const pathToConf = path.resolve(themeRoot, cli.flags.config);
 
-//console.log(pathToConf);
 (async () => {
-	await themeClaim(pathToConf);
+	return await themeClaim(pathToConf);
 })();
+
+module.exports = async (config = pathToConf) => {
+	return await themeClaim(config);
+}
