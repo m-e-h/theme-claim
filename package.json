@@ -1,6 +1,6 @@
 {
 	"name": "theme-claim",
-	"version": "0.1.4",
+	"version": "0.1.5",
 	"description": "WP theme renamer",
 	"repository": "m-e-h/theme-claim",
 	"author": "Marty Helmick",
@@ -14,8 +14,7 @@
 	],
 	"scripts": {
 		"start": "node cli.js",
-		"test": "npx ava",
-		"release": "npm t && git tag $npm_package_version && git push && git push --tags && npm publish"
+		"test": "npx ava"
 	},
 	"dependencies": {
 		"case": "^1.5.5",
