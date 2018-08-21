@@ -5,26 +5,22 @@
 	"repository": "m-e-h/theme-claim",
 	"author": "Marty Helmick",
 	"license": "GPL-2.0+",
+	"main": "index.js",
 	"bin": {
-		"theme-claim": "cli.js"
+		"theme-claim": "./bin/cli.js"
 	},
-	"files": [
-		"lib",
-		"cli.js"
-	],
 	"scripts": {
-		"start": "node cli.js",
 		"test": "npx ava"
 	},
 	"dependencies": {
-		"case": "^1.5.5",
+		"casex": "^2.0.0",
 		"boxen": "^1.3.0",
 		"chalk": "^2.4.1",
 		"find-up": "^3.0.0",
 		"fs-extra": "^7.0.0",
 		"inquirer": "^6.1.0",
 		"meow": "^5.0.0",
-		"replace-in-file": "^3.4.0"
+		"replace-in-file": "^3.4.2"
 	},
 	"devDependencies": {
 		"ava": "^0.25.0",

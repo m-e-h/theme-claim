@@ -3,8 +3,8 @@
 const fs = require("fs-extra");
 const chalk = require("chalk");
 const boxen = require("boxen");
-const themeQuestions = require("./question");
-const renameTheme = require("./replace");
+const themeQuestions = require("./lib/question");
+const renameTheme = require("./lib/replace");
 
 module.exports = async config => {
 	// cli Intro

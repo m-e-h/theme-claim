@@ -3,8 +3,8 @@
 
 const path = require("path");
 const meow = require("meow");
-const themeClaim = require("./lib/theme-claim");
-const getConf = require("./lib/configPath");
+const themeClaim = require("..");
+const getConf = require("../lib/configPath");
 
 const themeRoot = getConf.themeRoot;
 
@@ -32,10 +32,16 @@ const cli = meow(
 
 const pathToConf = path.resolve(themeRoot, cli.flags.config);
 
-(async () => {
-	return await themeClaim(pathToConf);
-})();
+// (async () => {
+// 	return await themeClaim(pathToConf);
+// })();
 
-module.exports = async (config = pathToConf) => {
-	return await themeClaim(config);
-}
+// module.exports = async (config = pathToConf) => {
+// 	return await themeClaim(config);
+// }
+
+module.exports = themeClaim(pathToConf);
+
+// module.exports.return = (conf = pathToConf) => {
+// 	return themeClaim(conf);
+// };
