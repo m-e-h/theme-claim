@@ -14,25 +14,28 @@ $ yarn add theme-claim --dev
 ```
 
 ## Usage
+
 ### In a terminal
+
 ```shell
-$theme-claim --help
+$ theme-claim --help
 
-	Usage
-	  $ theme-claim
+  Usage
+    $ theme-claim
 
-	Options
-	  --config=<path>  Path to config [Default: ./themeclaim.json]
-		--ignore=<path>  Specify an additional file or glob to ignore
+  Options
+    --config=<path>  Path to config [Default: ./themeclaim.json]
+    --ignore=<path>  Specify an additional file or glob to ignore
 
-	Examples
-	  $ theme-claim --config='/build/conf.json' --ignore='**/*.ignore'
+  Examples
+    $ theme-claim --config='/build/conf.json' --ignore='**/*.ignore'
 ```
+
 ### Or in a `package.json` `script`
 
 ```json
 "scripts": {
-  "rename": "theme-claim",
+	"rename": "theme-claim",
 }
 ```
 
