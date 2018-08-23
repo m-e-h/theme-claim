@@ -11,13 +11,14 @@ const themeRoot = getConf.themeRoot;
 const cli = meow(
 	`
 	Usage
-	  $ theme-claim --config=<path>
+	  $ theme-claim
 
 	Options
-	  --config=<path>  Path to config [Default: ./themeclaim.json]
+		--config=<path>  Path to config [Default: ./themeclaim.json]
+		--ignore=<path>  Specify an additional file or glob to ignore
 
 	Examples
-	  $ theme-claim --config='/build/conf.json'
+	  $ theme-claim --config='/build/conf.json' --ignore='**/*.ignore'
 `,
 	{
 		flags: {
@@ -25,6 +26,11 @@ const cli = meow(
 				type: "string",
 				alias: "c",
 				default: getConf()
+			},
+			ignore: {
+				type: "string",
+				alias: "i",
+				default: "**/*.ignore"
 			}
 		}
 	}
@@ -32,16 +38,4 @@ const cli = meow(
 
 const pathToConf = path.resolve(themeRoot, cli.flags.config);
 
-// (async () => {
-// 	return await themeClaim(pathToConf);
-// })();
-
-// module.exports = async (config = pathToConf) => {
-// 	return await themeClaim(config);
-// }
-
-module.exports = themeClaim(pathToConf);
-
-// module.exports.return = (conf = pathToConf) => {
-// 	return themeClaim(conf);
-// };
+module.exports = themeClaim(pathToConf, cli.flags.ignore);

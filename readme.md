@@ -19,13 +19,14 @@ $ yarn add theme-claim --dev
 $theme-claim --help
 
 	Usage
-	  $ theme-claim --config=<path>
+	  $ theme-claim
 
 	Options
 	  --config=<path>  Path to config [Default: ./themeclaim.json]
+		--ignore=<path>  Specify an additional file or glob to ignore
 
 	Examples
-	  $ theme-claim --config='./build/conf.json'
+	  $ theme-claim --config='/build/conf.json' --ignore='**/*.ignore'
 ```
 ### Or in a `package.json` `script`
 

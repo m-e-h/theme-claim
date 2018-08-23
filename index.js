@@ -5,8 +5,9 @@ const chalk = require("chalk");
 const boxen = require("boxen");
 const themeQuestions = require("./lib/question");
 const renameTheme = require("./lib/replace");
+//let ignoreFile = "style.css";
 
-module.exports = async config => {
+module.exports = async (config, ignoreFile = "**/*.ignore") => {
 	// cli Intro
 	console.log(
 		boxen(
@@ -35,5 +36,5 @@ It starts with
 
 	console.log(chalk.red("\nReplacing..."));
 
-	await renameTheme(newConf);
+	await renameTheme(newConf, ignoreFile);
 };
