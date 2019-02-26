@@ -10,20 +10,22 @@
 		"theme-claim": "./bin/cli.js"
 	},
 	"scripts": {
-		"test": "npx ava"
+		"test": "npx ava",
+		"np": "npx np"
 	},
 	"dependencies": {
-		"boxen": "^1.3.0",
-		"casex": "^2.0.0",
-		"chalk": "^2.4.1",
+		"boxen": "^3.0.0",
+		"casex": "^3.0.0",
+		"chalk": "^2.4.2",
 		"find-up": "^3.0.0",
-		"fs-extra": "^7.0.0",
-		"inquirer": "^6.2.0",
+		"fs-extra": "^7.0.1",
+		"inquirer": "^6.2.2",
 		"meow": "^5.0.0",
-		"replace-in-file": "^3.4.2"
+		"np": "^4.0.2",
+		"replace-in-file": "^3.4.3"
 	},
 	"devDependencies": {
-		"ava": "^0.25.0",
+		"ava": "^1.2.0",
 		"write-files-atomic": "^1.0.0"
 	},
 	"engines": {
